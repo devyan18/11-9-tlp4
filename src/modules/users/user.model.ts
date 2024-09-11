@@ -7,9 +7,9 @@ export type IUser = {
   password: string;
 };
 
-export type IUserModel = IUser & Document;
+export type IUserDocument = IUser & Document;
 
-const userSchema = new Schema<IUserModel>({
+const userSchema = new Schema<IUserDocument>({
   username: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
@@ -27,4 +27,4 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-export const User = model<IUserModel>("User", userSchema);
+export const User = model<IUserDocument>("User", userSchema);

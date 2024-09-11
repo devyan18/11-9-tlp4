@@ -5,6 +5,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 
 import { environments } from "./config/environments";
+import { authRouter } from "./modules/auth/auth.router";
 
 class App {
   constructor(
@@ -30,7 +31,7 @@ class App {
   }
 
   public routes(): void {
-    this.app.use();
+    this.app.use("/api/auth", authRouter);
   }
 
   public listen(): void {

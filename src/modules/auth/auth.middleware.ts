@@ -1,20 +1,33 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { environments } from "../../config/environments";
 
 import { userService } from "../users/user.service";
+import { AuthService } from "./auth.service";
+import { IUserDocument } from "../users/user.model";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: IUserDocument;
+    }
+  }
+}
 
 export class AuthMiddleware {
   static async validateToken(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.headers.authorization;
+      const tokenWithBearer = req.headers.authorization;
+
+      const token = tokenWithBearer?.split(" ")[1];
+
       if (!token) {
         return res.status(401).json({ message: "Token is required" });
       }
-      // Validate token
-      const { userId } = jwt.verify(token, environments.JWT_SECRET);
 
-      // Attach user to request
+      const { userId } = await AuthService.verifyToken(token);
+
+      if (!userId) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
 
       const user = await userService.findById(userId);
 
@@ -23,6 +36,7 @@ export class AuthMiddleware {
       }
 
       req.user = user;
+
       next();
     } catch (error) {
       return res.status(401).json({ message: "Invalid token" });
