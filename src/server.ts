@@ -36,7 +36,7 @@ class App {
 
   public listen(): void {
     this.app.listen(this.port, () => {
-      console.log(`Server is running on ${this.uri}`);
+      console.log(`Server is running on http://localhost:${this.port}`);
     });
   }
 }
